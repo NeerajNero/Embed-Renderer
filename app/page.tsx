@@ -29,6 +29,38 @@ export default function Home() {
     return null;
   };
 
+  const detectOrientation = (url: string, platform: string) => {
+    // YouTube - check for shorts (portrait) vs regular videos (landscape)
+    if (platform === 'youtube') {
+      if (url.includes('/shorts/')) return 'portrait';
+      return 'landscape';
+    }
+    
+    // TikTok - always portrait
+    if (platform === 'tiktok') {
+      return 'portrait';
+    }
+    
+    // Instagram - check for reels (portrait) vs posts (square/landscape)
+    if (platform === 'instagram') {
+      if (url.includes('/reel/') || url.includes('/reels/')) return 'portrait';
+      return 'square';
+    }
+    
+    // Pinterest - check for pins (portrait) vs boards (landscape)
+    if (platform === 'pinterest') {
+      if (url.includes('/pin/')) return 'portrait';
+      return 'landscape';
+    }
+    
+    // Twitter/X, Facebook, LinkedIn, Bluesky - typically landscape for posts
+    if (['twitter', 'facebook', 'linkedin', 'bluesky'].includes(platform)) {
+      return 'landscape';
+    }
+    
+    return 'unknown';
+  };
+
   const isValidUrl = (string: string) => {
     try {
       new URL(string);
@@ -66,11 +98,20 @@ export default function Home() {
 
   const renderEmbed = (url: string, index: number) => {
     const platform = detectPlatform(url);
+    const orientation = detectOrientation(url, platform || '');
+    
+    // Adjust height based on orientation
+    let height = 400;
+    if (orientation === 'portrait') {
+      height = 600; // Taller for portrait content
+    } else if (orientation === 'square') {
+      height = 500; // Medium height for square content
+    }
     
     const embedProps = {
       url: url,
       width: '100%',
-      height: 400
+      height: height
     };
 
     switch (platform) {
@@ -158,6 +199,20 @@ export default function Home() {
                     <p className="text-xs text-gray-500 truncate" title={url}>
                       {url}
                     </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                        {detectPlatform(url)?.toUpperCase()}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        detectOrientation(url, detectPlatform(url) || '') === 'portrait' 
+                          ? 'bg-green-100 text-green-800' 
+                          : detectOrientation(url, detectPlatform(url) || '') === 'square'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {detectOrientation(url, detectPlatform(url) || '').toUpperCase()}
+                      </span>
+                    </div>
                   </div>
                   
                   <div className="flex justify-center">

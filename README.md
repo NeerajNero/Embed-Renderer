@@ -1,5 +1,5 @@
 📱 Social Media Embed Generator
-A simple web app to generate and preview social media embeds from a URL. Built with Next.js and Tailwind CSS.
+A simple web app to generate and preview social media embeds from a URL. Built with Next.js and Tailwind CSS..
 
 Key Features
 Live previews of embeds from various platforms.
